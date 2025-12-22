@@ -1,0 +1,227 @@
+# Solution Options Analysis Template (Lite)
+## Quick Evaluation Framework
+
+## Document Information
+
+| Field | Value |
+|-------|-------|
+| **Project** | [Project Name] |
+| **Date** | [Date] |
+| **Prepared By** | [Name] |
+| **Status** | [Draft / Final] |
+
+---
+
+## 1. Executive Summary
+
+### Problem Statement
+[2-3 sentences describing what needs to be solved]
+
+### Options Overview
+| Option | Summary | Cost (3-yr) | Timeline | Score |
+|--------|---------|-------------|----------|-------|
+| 1: [Name] | [Brief description] | $[Amount] | [Duration] | [X]/100 ⭐ |
+| 2: [Name] | [Brief description] | $[Amount] | [Duration] | [X]/100 |
+| 3: [Name] | [Brief description] | $[Amount] | [Duration] | [X]/100 |
+
+### Recommendation
+**[Option Name]** because [1-2 sentence rationale]
+
+---
+
+## 2. Evaluation Criteria & Weights
+
+| Category | Weight | Description |
+|----------|--------|-------------|
+| Business Value | [%] | ROI, time to market, strategic fit |
+| Technical Fit | [%] | Architecture, scalability, integration |
+| Cost | [%] | Implementation + 3-year operations |
+| Risk | [%] | Technical, delivery, vendor risks |
+| Feasibility | [%] | Team capability, timeline, dependencies |
+| **Total** | **100%** | |
+
+---
+
+## 3. Option 1: [Solution Name]
+
+### Overview
+[2-3 sentences describing this approach]
+
+### Key Technologies
+- [Tech 1], [Tech 2], [Tech 3]
+
+### Timeline & Cost
+- **Implementation**: [Duration] / $[Cost]
+- **Monthly Operations**: $[Cost]
+- **3-Year TCO**: $[Total]
+
+### Pros & Cons
+✅ **Strengths**
+- [Strength 1]
+- [Strength 2]
+- [Strength 3]
+
+❌ **Weaknesses**
+- [Weakness 1]
+- [Weakness 2]
+
+### Scoring
+| Category | Weight | Score (1-10) | Weighted | Notes |
+|----------|--------|--------------|----------|-------|
+| Business Value | [%] | [X] | [Calc] | [Brief rationale] |
+| Technical Fit | [%] | [X] | [Calc] | [Brief rationale] |
+| Cost | [%] | [X] | [Calc] | [Brief rationale] |
+| Risk | [%] | [X] | [Calc] | [Brief rationale] |
+| Feasibility | [%] | [X] | [Calc] | [Brief rationale] |
+| **TOTAL** | **100%** | | **[X]** | |
+
+---
+
+## 4. Option 2: [Solution Name]
+
+### Overview
+[2-3 sentences describing this approach]
+
+### Key Technologies
+- [Tech 1], [Tech 2], [Tech 3]
+
+### Timeline & Cost
+- **Implementation**: [Duration] / $[Cost]
+- **Monthly Operations**: $[Cost]
+- **3-Year TCO**: $[Total]
+
+### Pros & Cons
+✅ **Strengths**
+- [Strength 1]
+- [Strength 2]
+- [Strength 3]
+
+❌ **Weaknesses**
+- [Weakness 1]
+- [Weakness 2]
+
+### Scoring
+| Category | Weight | Score (1-10) | Weighted | Notes |
+|----------|--------|--------------|----------|-------|
+| Business Value | [%] | [X] | [Calc] | [Brief rationale] |
+| Technical Fit | [%] | [X] | [Calc] | [Brief rationale] |
+| Cost | [%] | [X] | [Calc] | [Brief rationale] |
+| Risk | [%] | [X] | [Calc] | [Brief rationale] |
+| Feasibility | [%] | [X] | [Calc] | [Brief rationale] |
+| **TOTAL** | **100%** | | **[X]** | |
+
+---
+
+## 5. Option 3: [Solution Name]
+
+### Overview
+[2-3 sentences describing this approach]
+
+### Key Technologies
+- [Tech 1], [Tech 2], [Tech 3]
+
+### Timeline & Cost
+- **Implementation**: [Duration] / $[Cost]
+- **Monthly Operations**: $[Cost]
+- **3-Year TCO**: $[Total]
+
+### Pros & Cons
+✅ **Strengths**
+- [Strength 1]
+- [Strength 2]
+- [Strength 3]
+
+❌ **Weaknesses**
+- [Weakness 1]
+- [Weakness 2]
+
+### Scoring
+| Category | Weight | Score (1-10) | Weighted | Notes |
+|----------|--------|--------------|----------|-------|
+| Business Value | [%] | [X] | [Calc] | [Brief rationale] |
+| Technical Fit | [%] | [X] | [Calc] | [Brief rationale] |
+| Cost | [%] | [X] | [Calc] | [Brief rationale] |
+| Risk | [%] | [X] | [Calc] | [Brief rationale] |
+| Feasibility | [%] | [X] | [Calc] | [Brief rationale] |
+| **TOTAL** | **100%** | | **[X]** | |
+
+---
+
+## 6. Comparison Summary
+
+### Final Scores
+| Ranking | Option | Total Score | Status |
+|---------|--------|-------------|--------|
+| 1st | [Name] | [X]/100 | ⭐ Recommended |
+| 2nd | [Name] | [X]/100 | Acceptable |
+| 3rd | [Name] | [X]/100 | Not Recommended |
+
+### Cost Comparison
+| Option | Implementation | 3-Year Operations | 3-Year Total |
+|--------|---------------|-------------------|--------------|
+| Option 1 | $[Amount] | $[Amount] | **$[Total]** |
+| Option 2 | $[Amount] | $[Amount] | **$[Total]** |
+| Option 3 | $[Amount] | $[Amount] | **$[Total]** |
+
+### Timeline Comparison
+| Option | Implementation Duration | Time to First Value |
+|--------|------------------------|-------------------|
+| Option 1 | [Weeks/Months] | [When] |
+| Option 2 | [Weeks/Months] | [When] |
+| Option 3 | [Weeks/Months] | [When] |
+
+### Risk Overview
+| Option | Overall Risk Level | Key Concerns |
+|--------|-------------------|--------------|
+| Option 1 | [High/Med/Low] | [Primary risk] |
+| Option 2 | [High/Med/Low] | [Primary risk] |
+| Option 3 | [High/Med/Low] | [Primary risk] |
+
+---
+
+## 7. Recommendation
+
+### Selected Solution
+**Option [X]: [Name]** - Score: **[X]/100**
+
+### Why This Option?
+1. [Primary reason 1]
+2. [Primary reason 2]
+3. [Primary reason 3]
+
+### Trade-offs Accepted
+- [What we're giving up or accepting]
+- [Another trade-off]
+
+### Critical Success Factors
+- [Factor 1]
+- [Factor 2]
+- [Factor 3]
+
+---
+
+## 8. Next Steps
+
+### Immediate Actions
+1. [Action] - Owner: [Name], Due: [Date]
+2. [Action] - Owner: [Name], Due: [Date]
+3. [Action] - Owner: [Name], Due: [Date]
+
+### Decision Needed
+- **What**: [Decision to be made]
+- **Who**: [Decision maker]
+- **When**: [Target date]
+
+---
+
+## Approval
+
+| Role | Name | Date | Approved |
+|------|------|------|----------|
+| Solution Architect | [Name] | | ☐ |
+| Technical Lead | [Name] | | ☐ |
+| Business Owner | [Name] | | ☐ |
+
+---
+
+*End of Solution Options Analysis (Lite)*
