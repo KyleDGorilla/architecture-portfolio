@@ -1,0 +1,215 @@
+# Solution Blueprint Template (Lite)
+## For Small to Medium Projects
+
+## Document Information
+
+| Field | Value |
+|-------|-------|
+| **Project Name** | [Project Name] |
+| **Version** | [Version Number] |
+| **Date** | [Date] |
+| **Author(s)** | [Solution Architect Name(s)] |
+| **Status** | [Draft / In Review / Approved] |
+
+---
+
+## 1. Executive Summary
+
+### Problem Statement
+[2-3 sentences describing the business problem or opportunity]
+
+### Solution Overview
+[2-3 sentences describing the proposed solution]
+
+### Key Benefits
+- [Benefit 1]
+- [Benefit 2]
+- [Benefit 3]
+
+### Estimates
+- **Timeline**: [Duration]
+- **Cost**: [Range]
+- **Team**: [Size]
+
+---
+
+## 2. Requirements
+
+### Functional Requirements
+| ID | Requirement | Priority |
+|----|-------------|----------|
+| FR-01 | [Requirement] | [High/Medium/Low] |
+| FR-02 | [Requirement] | [High/Medium/Low] |
+| FR-03 | [Requirement] | [High/Medium/Low] |
+
+### Non-Functional Requirements
+| Type | Requirement | Target |
+|------|-------------|--------|
+| Performance | [Metric] | [Target value] |
+| Availability | Uptime | [99.X%] |
+| Security | [Control] | [Requirement] |
+
+### Success Criteria
+- [Measurable criterion 1]
+- [Measurable criterion 2]
+- [Measurable criterion 3]
+
+---
+
+## 3. Architecture
+
+### High-Level Design
+```
+[Architecture diagram or description]
+
+Key Components:
+- [Component 1]: [Purpose]
+- [Component 2]: [Purpose]
+- [Component 3]: [Purpose]
+```
+
+### Technology Stack
+- **Frontend**: [Technology]
+- **Backend**: [Technology]
+- **Database**: [Technology]
+- **Cloud/Hosting**: [Platform and key services]
+- **CI/CD**: [Tools]
+
+### Key Design Decisions
+
+#### Decision 1: [Title]
+- **Choice**: [What was decided]
+- **Rationale**: [Why this was chosen]
+- **Alternatives**: [What else was considered]
+
+#### Decision 2: [Title]
+- **Choice**: [What was decided]
+- **Rationale**: [Why this was chosen]
+- **Alternatives**: [What else was considered]
+
+### Integration Points
+| System | Type | Purpose |
+|--------|------|---------|
+| [System 1] | [API/Event/etc] | [What data/functionality] |
+| [System 2] | [API/Event/etc] | [What data/functionality] |
+
+---
+
+## 4. Security & Compliance
+
+### Security Controls
+- **Authentication**: [Method]
+- **Authorization**: [Approach]
+- **Data Encryption**: [At rest and in transit]
+- **Network Security**: [Key controls]
+
+### Compliance Requirements
+- [Requirement 1]
+- [Requirement 2]
+
+---
+
+## 5. Implementation
+
+### Delivery Phases
+
+#### Phase 1: [Name] - [Duration]
+**Deliverables**: [What will be delivered]
+**Success Criteria**: [How to measure]
+
+#### Phase 2: [Name] - [Duration]
+**Deliverables**: [What will be delivered]
+**Success Criteria**: [How to measure]
+
+#### Phase 3: [Name] - [Duration]
+**Deliverables**: [What will be delivered]
+**Success Criteria**: [How to measure]
+
+### Testing Approach
+- **Unit Testing**: [Coverage target]
+- **Integration Testing**: [Scope]
+- **UAT**: [Approach]
+
+### Deployment Strategy
+- **Method**: [Blue-Green/Rolling/etc]
+- **Rollback Plan**: [Approach]
+
+---
+
+## 6. Operations
+
+### Monitoring
+- **Key Metrics**: [List 3-5 critical metrics]
+- **Alerting**: [Critical alerts and thresholds]
+- **Logging**: [Approach and retention]
+
+### Support
+- **Support Hours**: [Availability]
+- **Response Times**: [SLA]
+- **Escalation**: [Process]
+
+### Backup & Recovery
+- **Backup Frequency**: [Schedule]
+- **RTO**: [Target recovery time]
+- **RPO**: [Acceptable data loss window]
+
+---
+
+## 7. Costs
+
+### Monthly Operating Costs
+| Category | Description | Cost |
+|----------|-------------|------|
+| Compute | [Resources] | $[Amount] |
+| Storage | [Resources] | $[Amount] |
+| Services | [Key services] | $[Amount] |
+| Licensing | [If applicable] | $[Amount] |
+| **Total** | | **$[Total]** |
+
+### Implementation Costs
+| Phase | Resources | Cost |
+|-------|-----------|------|
+| Development | [Team size x duration] | $[Amount] |
+| Testing | [Team size x duration] | $[Amount] |
+| **Total** | | **$[Total]** |
+
+### Total First Year Cost
+- **Implementation**: $[Amount]
+- **Operations (12 months)**: $[Amount]
+- **Total**: $[Amount]
+
+---
+
+## 8. Risks
+
+| Risk | Impact | Likelihood | Mitigation |
+|------|--------|------------|------------|
+| [Risk 1] | [H/M/L] | [H/M/L] | [Strategy] |
+| [Risk 2] | [H/M/L] | [H/M/L] | [Strategy] |
+| [Risk 3] | [H/M/L] | [H/M/L] | [Strategy] |
+
+---
+
+## 9. Dependencies & Assumptions
+
+### Key Dependencies
+- [Dependency 1 - Owner and impact]
+- [Dependency 2 - Owner and impact]
+
+### Critical Assumptions
+- [Assumption 1]
+- [Assumption 2]
+
+---
+
+## 10. Approval
+
+| Role | Name | Date | Signature |
+|------|------|------|-----------|
+| Solution Architect | [Name] | | |
+| Technical Lead | [Name] | | |
+| Business Owner | [Name] | | |
+
+---
+
+*End of Solution Blueprint (Lite)*
