@@ -1,4 +1,4 @@
-# Solution Blueprint: WoW 3.3.5a Hybrid Single-Worldserver Architecture
+# [DRAFT] Solution Blueprint: WoW 3.3.5a Hybrid Single-Worldserver Architecture
 
 ## Document Information
 
@@ -125,6 +125,7 @@ This solution demonstrates that hybrid architectures, when properly designed wit
 #### Core Components
 | Component | Purpose | Technology |
 |-----------|---------|------------|
+| Cloudflare DNS | Domain resolution, DDoS protection, DNS routing | Cloudflare Free Tier, DNS-only mode (proxy disabled) |
 | AWS Authserver | Player authentication, session management, realm list | Ubuntu 24.04, TrinityCore authserver binary, MySQL 8.0 (auth DB) |
 | Home Worldserver | Gameplay processing, AI bot management, world simulation | Windows 11, TrinityCore worldserver with playerbots, MySQL 8.0 (char/world DBs) |
 | Dual NAT Router Infrastructure | Port forwarding, network security, traffic routing | Greenwave Fiber modem (192.168.0.x) + Asus Router (192.168.50.x) |
@@ -132,18 +133,20 @@ This solution demonstrates that hybrid architectures, when properly designed wit
 | Backup System | Disaster recovery, data protection | AWS S3 automated daily backups, 30-day retention |
 
 #### Supporting Services
-- **AWS Elastic IP** - Static public IP for authserver (free while instance running)
+- **Cloudflare DNS Management** - Domain: wow.vanillagorilla.cc, A record points to AWS Elastic IP, TTL: 300 seconds, DDoS protection (free tier)
+- **AWS Elastic IP** - Static public IP for authserver (free while instance running), masked in documentation as <AWS_ELASTIC_IP>
 - **AWS Security Groups** - Firewall rules controlling inbound traffic (ports 3724, 3306, 22)
 - **AWS CloudWatch** - Basic monitoring for EC2 instance health (free tier)
-- **Dynamic DNS Monitoring** - Tracking home IP changes for realmlist updates
+- **Dynamic DNS Monitoring** - Tracking home IP changes for Cloudflare DNS updates (manual currently, automation planned)
 - **GitHub Actions CI/CD** - Automated compilation and deployment workflows
 
 ### Technology Stack
 
 #### Frontend
 - **Game Client**: World of Warcraft 3.3.5a (12340 build)
-- **Realmlist**: Hardcoded static IP (AWS: 52.53.46.235 for auth, Home: 174.22.234.75 for world)
+- **Realmlist**: Cloudflare-managed domain (wow.vanillagorilla.cc) resolves to AWS authserver, players redirected to home worldserver
 - **Connection Protocol**: TCP (auth: 3724, world: 7878)
+- **DNS Flow**: Player → Cloudflare DNS → AWS Elastic IP → Authserver → Returns home public IP for worldserver
 
 #### Backend
 - **Runtime**: TrinityCore 3.3.5a (AzerothCore fork with playerbots)
@@ -165,7 +168,7 @@ This solution demonstrates that hybrid architectures, when properly designed wit
 - **Cloud Provider**: AWS (us-west-1 California region)
 - **Compute**: EC2 t3.small (2 vCPU, 2 GB RAM, burstable credits)
 - **Storage**: EBS gp3 30 GB (3000 IOPS baseline, 125 MB/s throughput)
-- **Networking**: VPC with default security groups, Elastic IP (52.53.46.235)
+- **Networking**: VPC with default security groups, Elastic IP (routed via Cloudflare DNS)
 - **Security**: AWS Shield Standard (DDoS), Security Groups (stateful firewall), UFW (host firewall)
 - **Backup**: S3 Standard (automated daily auth DB backups, 30-day retention)
 
@@ -254,6 +257,23 @@ This solution demonstrates that hybrid architectures, when properly designed wit
   - **Negative**: Port forwarding complexity (must configure both devices), double NAT can cause issues (hasn't in practice)
 - **Date**: December 17, 2024
 
+### ADR-006: Cloudflare DNS for Domain Management
+- **Status**: Accepted
+- **Context**: Players need a memorable, stable way to connect to the server. Direct IP addresses (AWS Elastic IP for auth, dynamic home IP for world) are difficult to remember and subject to change. Cloudflare provides free DNS with DDoS protection and easy management.
+- **Decision**: Use Cloudflare DNS to manage wow.vanillagorilla.cc domain pointing to server infrastructure. Subdomain routes to AWS Elastic IP for authserver authentication.
+- **Alternatives Considered**:
+  - **AWS Route53** - Rejected: Costs $0.50/month per hosted zone, unnecessary expense for single domain
+  - **No-IP Dynamic DNS** - Rejected: Free tier has ads, less professional, limited features
+  - **Hardcoded IP in Realmlist** - Rejected: Difficult to remember, no flexibility for IP changes
+- **Consequences**:
+  - **Positive**: Professional domain name, easy to remember (wow.vanillagorilla.cc), free DDoS protection, simple DNS management, flexibility to change backend IPs without client updates
+  - **Negative**: Additional dependency on Cloudflare service (99.99%+ uptime SLA mitigates this), DNS propagation delays when making changes (5-30 minutes)
+- **Technical Implementation**:
+  - A record: wow.vanillagorilla.cc → AWS Elastic IP (authserver)
+  - Cloudflare proxy disabled (DNS-only mode) to avoid websocket/game protocol issues
+  - TTL: 300 seconds (5 minutes) for quick updates if needed
+- **Date**: January 2025
+
 ---
 
 ## 5. Architecture Diagrams
@@ -273,13 +293,27 @@ This solution demonstrates that hybrid architectures, when properly designed wit
 │    └──────┬───────┘         └──────┬───────┘        └──────┬───────┘  │
 └───────────┼────────────────────────┼───────────────────────┼──────────┘
             │                        │                       │
-            │ Step 1: Login          │ SSH :22              │ Metrics
-            │ (auth :3724)           │ RDP :3389            │
+            │ Step 1: DNS Query      │ SSH :22              │ Metrics
+            │ wow.vanillagorilla.cc  │ RDP :3389            │
             ▼                        ▼                       ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│                     Cloudflare DNS Layer (Free Tier)                    │
+│  ┌───────────────────────────────────────────────────────────────────┐  │
+│  │ DNS Configuration                                                 │  │
+│  │ ┌─────────────────────────────────────────────────────────────┐   │  │
+│  │ │ A Record: wow.vanillagorilla.cc → <AWS_ELASTIC_IP>          │   │  │
+│  │ │ TTL: 300 seconds (5 minutes)                                │   │  │
+│  │ │ Proxy Status: DNS-only (orange cloud OFF)                   │   │  │
+│  │ │ DDoS Protection: Layer 3/4 (always active)                  │   │  │
+│  │ └─────────────────────────────────────────────────────────────┘   │  │
+│  └───────────────────────────────────────────────────────────────────┘  │
+└────────────────────────┬────────────────────────────────────────────────┘
+                         │ Resolves to AWS Elastic IP
+                         ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                          AWS Cloud (us-west-1)                          │
 │  ┌───────────────────────────────────────────────────────────────────┐  │
-│  │ EC2 t3.small (52.53.46.235)                    [Security Group]   │  │
+│  │ EC2 t3.small (wow.vanillagorilla.cc)       [Security Group]      │  │
 │  │ ┌──────────────┐  ┌──────────────────────┐                       │  │
 │  │ │  Authserver  │  │   MySQL 8.0          │                       │  │
 │  │ │  :3724       │──│   acore_auth DB      │                       │  │
@@ -287,8 +321,9 @@ This solution demonstrates that hybrid architectures, when properly designed wit
 │  │ │ - Auth login │  │   - Sessions         │     :3724 (World)     │  │
 │  │ │ - Realm list │  │   - Realmlist        │     :3306 (Home WS)   │  │
 │  │ │   Returns:   │  │                      │     :22 (Admin)       │  │
-│  │ │   174.22... │  │   Localhost only     │                       │  │
-│  │ │   :7878      │  │   (not exposed)      │                       │  │
+│  │ │   <HOME_     │  │   Localhost only     │                       │  │
+│  │ │   PUBLIC_IP> │  │   (not exposed)      │                       │  │
+│  │ │   :7878      │  │                      │                       │  │
 │  │ └──────────────┘  └──────────────────────┘                       │  │
 │  └───────────────────────────────────────────────────────────────────┘  │
 └────────────────────────┬────────────────────────────────────────────────┘
@@ -296,13 +331,13 @@ This solution demonstrates that hybrid architectures, when properly designed wit
                          │ (session validation)
             ┌────────────┴────────────┐
             │ Step 2: Connect to      │
-            │ World at 174.22.234.75  │
-            │         :7878           │
+            │ World at                │
+            │ <HOME_PUBLIC_IP>:7878   │
             └────────────┬────────────┘
                          │
                          ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                    Home Network (174.22.234.75)                         │
+│                    Home Network (<HOME_PUBLIC_IP>)                      │
 │  ┌───────────────────────────────────────────────────────────────────┐  │
 │  │ Greenwave Modem (192.168.0.1)          [NAT 1]                    │  │
 │  │ Port Forward: :7878 → 192.168.0.6:7878                            │  │
@@ -330,13 +365,14 @@ This solution demonstrates that hybrid architectures, when properly designed wit
 │  └───────────────────────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────────────────┘
 
-Diagram should show:
-- AWS cloud boundary with authserver + auth database
-- Home network boundary with worldserver + char/world databases
-- Player connections: AWS auth (step 1), then home world (step 2)
-- Worldserver outbound connection to AWS MySQL for session validation
-- Double NAT layers in home network
-- Local loopback connections for database access
+Connection Flow:
+1. Player sets realmlist.wtf: "SET realmlist wow.vanillagorilla.cc"
+2. Cloudflare DNS resolves wow.vanillagorilla.cc → <AWS_ELASTIC_IP>
+3. Player connects to AWS authserver on :3724
+4. Authserver validates credentials, returns worldserver address: <HOME_PUBLIC_IP>:7878
+5. Player connects directly to home worldserver through double NAT
+6. Worldserver validates session with AWS MySQL once per login (50-100ms)
+7. All gameplay queries use local MySQL (<1ms latency)
 ```
 
 ### Component Architecture
@@ -481,14 +517,27 @@ Player Login and Session Establishment Flow:
 
 1. Player Launch Game
    ├─ Client reads realmlist.wtf
-   ├─ Hardcoded: SET realmlist 52.53.46.235
-   └─ Target: AWS Authserver :3724
+   ├─ Hardcoded: SET realmlist wow.vanillagorilla.cc
+   └─ Target: Cloudflare DNS resolution required
 
-2. TCP Connection to AWS Auth
-   Player (anywhere) → Internet → AWS (52.53.46.235:3724)
+2. DNS Resolution (Cloudflare)
+   ┌─────────────────────────────────────────┐
+   │ Player → Cloudflare DNS                 │
+   │ Query: A record for wow.vanillagorilla.cc│
+   └─────────────────────────────────────────┘
+                 ▼
+   ┌─────────────────────────────────────────┐
+   │ Cloudflare DNS → Player                 │
+   │ Response: <AWS_ELASTIC_IP>              │
+   │ TTL: 300 seconds (cached for 5 min)     │
+   │ Latency: 10-30ms (DNS query)            │
+   └─────────────────────────────────────────┘
+
+3. TCP Connection to AWS Auth
+   Player (anywhere) → Internet → AWS (<AWS_ELASTIC_IP>:3724)
    └─ Latency: 20-150ms (geographic)
 
-3. Authentication Handshake
+4. Authentication Handshake
    ┌─────────────────────────────────────────┐
    │ Player → AWS: CMSG_AUTH_SESSION         │
    │ Contains: username, password hash       │
@@ -513,7 +562,7 @@ Player Login and Session Establishment Flow:
    │ Contains: session key, result           │
    └─────────────────────────────────────────┘
 
-4. Realm List Request
+5. Realm List Request
    ┌─────────────────────────────────────────┐
    │ Player → AWS: CMSG_REALM_LIST           │
    └─────────────────────────────────────────┘
@@ -522,21 +571,21 @@ Player Login and Session Establishment Flow:
    │ AWS Authserver → AWS MySQL              │
    │ Query: SELECT * FROM realmlist          │
    │ Result: Realm "Diggy Diggy Hole"        │
-   │         Address: 174.22.234.75          │
+   │         Address: <HOME_IP>          │
    │         Port: 7878                      │
    └─────────────────────────────────────────┘
                  ▼
    ┌─────────────────────────────────────────┐
    │ AWS → Player: SMSG_REALM_LIST           │
    │ Player now knows: Connect to            │
-   │ 174.22.234.75:7878 for world server     │
+   │ <HOME_IP>:7878 for world server     │
    └─────────────────────────────────────────┘
 
-5. World Server Connection (Double NAT)
-   Player → ISP → CenturyLink → 174.22.234.75:7878
+6. World Server Connection (Double NAT)
+   Player → ISP → CenturyLink → <HOME_IP>:7878
                  ▼
    Greenwave Modem (192.168.0.1)
-   ├─ NAT: 174.22.234.75:7878 → 192.168.0.6:7878
+   ├─ NAT: <HOME_IP>:7878 → 192.168.0.6:7878
    └─ Firewall: Allow established connections
                  ▼
    Asus Router (192.168.50.1)
@@ -546,7 +595,7 @@ Player Login and Session Establishment Flow:
    Mini PC Worldserver (192.168.50.208:7878)
    └─ TCP connection established
 
-6. Session Validation (Remote)
+7. Session Validation (Remote)
    ┌─────────────────────────────────────────┐
    │ Player → Home WS: CMSG_AUTH_SESSION     │
    │ Contains: session key from AWS auth     │
@@ -565,7 +614,7 @@ Player Login and Session Establishment Flow:
    │ Player account ID retrieved             │
    └─────────────────────────────────────────┘
 
-7. Character Loading (Local)
+8. Character Loading (Local)
    ┌─────────────────────────────────────────┐
    │ Home WS → Local MySQL :3306             │
    │ Database: acore_characters              │
@@ -584,7 +633,7 @@ Player Login and Session Establishment Flow:
    │ Total latency: <5ms                     │
    └─────────────────────────────────────────┘
 
-8. Enter World
+9. Enter World
    ┌─────────────────────────────────────────┐
    │ Home WS → Player: Character in world    │
    │ - Position, zone, surrounding objects   │
@@ -633,7 +682,7 @@ Network Topology with Security Zones:
           ▼                               ▼
     ┌─────────────────┐         ┌──────────────────┐
     │ AWS us-west-1   │         │ Home Public IP   │
-    │ 52.53.46.235    │         │ 174.22.234.75    │
+    │ wow.vanillagorilla.cc    │         │ <HOME_IP>    │
     │ (Static EIP)    │         │ (Dynamic DHCP)   │
     └────────┬────────┘         └────────┬─────────┘
              │                           │
@@ -658,7 +707,7 @@ Network Topology with Security Zones:
     │ VPC: 172.31.0.0/16      │  │ Trust Level: High            │
     │ Subnet: 172.31.32.0/20  │  └──────────────────────────────┘
     │ Private: 172.31.47.154  │          │
-    │ Public: 52.53.46.235    │  ┌───────┴──────────────────────┐
+    │ Public: wow.vanillagorilla.cc    │  ┌───────┴──────────────────────┐
     │                         │  │ Asus Router                  │
     │ ┌─────────────────────┐ │  │ 192.168.50.1                 │
     │ │ ufw (Host Firewall) │ │  │ ┌──────────────────────────┐ │
@@ -923,7 +972,7 @@ Deployment Frequency:
   - Chat and command system (/commands, GM tools)
 - **Interactions**:
   - Inbound: Player clients on :7878 (through double NAT)
-  - Outbound: AWS MySQL (session validation) on 52.53.46.235:3306
+  - Outbound: AWS MySQL (session validation) on wow.vanillagorilla.cc:3306
   - Outbound: Local MySQL (char/world queries) on localhost:3306
 - **Scalability**: Current configuration handles 25 players + 2000 bots at 70-95% CPU, can reduce bot count for more players
 
@@ -1083,7 +1132,7 @@ CREATE TABLE `characters` (
   ```
   Inbound:
   - :3724 from 0.0.0.0/0 (TCP) - WoW auth port
-  - :3306 from 174.22.234.75/32 (TCP) - MySQL for home worldserver
+  - :3306 from <HOME_IP>/32 (TCP) - MySQL for home worldserver
   - :22 from <admin_ip>/32 (TCP) - SSH for management
   
   Outbound:
@@ -1093,7 +1142,7 @@ CREATE TABLE `characters` (
   ```
   sudo ufw allow 3724/tcp
   sudo ufw allow 22/tcp
-  sudo ufw allow from 174.22.234.75 to any port 3306
+  sudo ufw allow from <HOME_IP> to any port 3306
   sudo ufw enable
   ```
 - **Home Router Security**:
@@ -1181,7 +1230,7 @@ CREATE TABLE `characters` (
   - Install and configure MySQL 8.0
   - Compile and deploy authserver binary
 - **Deliverables**:
-  - Running authserver accessible on 52.53.46.235:3724
+  - Running authserver accessible on wow.vanillagorilla.cc:3724
   - MySQL auth database initialized with base schema
   - S3 backup automation configured
 - **Success Criteria**: Can connect WoW client and receive "Authentication successful" + realm list
@@ -1195,7 +1244,7 @@ CREATE TABLE `characters` (
   - Configure MySQL databases (char, world, playerbots)
   - Configure double NAT port forwarding
 - **Deliverables**:
-  - Running worldserver accessible on 174.22.234.75:7878
+  - Running worldserver accessible on <HOME_IP>:7878
   - Character and world databases populated
   - 2000 bots auto-spawning in zones
 - **Success Criteria**: Can connect from auth to world server, create character, interact with bots
@@ -1755,10 +1804,10 @@ Stability:
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
-| 0.1 | Dec 09, 2025 | Kyle | Initial draft, architecture evaluation |
-| 0.5 | Dec 17, 2025 | Kyle | Added ADRs, selected hybrid single-worldserver approach |
-| 0.9 | Dec 18, 2025 | Kyle | Completed implementation, POC results added |
-| 1.0 | Dec 23, 2025 | Kyle | Final review, production deployment validated, blueprint completed |
+| 0.1 | Dec 15, 2024 | Kyle | Initial draft, architecture evaluation |
+| 0.5 | Dec 17, 2024 | Kyle | Added ADRs, selected hybrid single-worldserver approach |
+| 0.9 | Dec 18, 2024 | Kyle | Completed implementation, POC results added |
+| 1.0 | Dec 22, 2024 | Kyle | Final review, production deployment validated, blueprint completed |
 
 ---
 
@@ -1766,10 +1815,10 @@ Stability:
 
 | Role | Name | Signature | Date |
 |------|------|-----------|------|
-| Solution Architect | Kyle | [Digital Signature] | December 22, 2025 |
-| Technical Lead | Kyle | [Digital Signature] | December 22, 2025 |
-| Project Owner | Kyle | [Digital Signature] | December 22, 2025 |
-| Security Review | Kyle | [Digital Signature] | December 22, 2025 |
+| Solution Architect | Kyle | [Digital Signature] | December 22, 2024 |
+| Technical Lead | Kyle | [Digital Signature] | December 22, 2024 |
+| Project Owner | Kyle | [Digital Signature] | December 22, 2024 |
+| Security Review | Kyle | [Digital Signature] | December 22, 2024 |
 
 ---
 
@@ -1778,7 +1827,7 @@ Stability:
 This solution blueprint documents the design, implementation, and operation of a hybrid cloud-home World of Warcraft 3.3.5a private server architecture. The solution achieves 73% cost savings ($24.22/month vs $73.62/month) while maintaining excellent performance through strategic workload placement: authentication in AWS for reliability, gameplay on home infrastructure for low-latency database access.
 
 Key achievements:
-- ✅ Successfully deployed and tested (December 18, 2025)
+- ✅ Successfully deployed and tested (December 18, 2024)
 - ✅ 2000 AI playerbots with instant interaction (<1ms latency)
 - ✅ 24+ hour stability test passed with zero crashes
 - ✅ 73% cost reduction vs full cloud alternative
