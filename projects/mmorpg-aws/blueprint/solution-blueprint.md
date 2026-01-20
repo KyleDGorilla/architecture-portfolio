@@ -571,28 +571,28 @@ Player Login and Session Establishment Flow:
    │ AWS Authserver → AWS MySQL              │
    │ Query: SELECT * FROM realmlist          │
    │ Result: Realm "Diggy Diggy Hole"        │
-   │         Address: <HOME_IP>          │
+   │         Address: <HOME_IP>              │
    │         Port: 7878                      │
    └─────────────────────────────────────────┘
                  ▼
    ┌─────────────────────────────────────────┐
    │ AWS → Player: SMSG_REALM_LIST           │
    │ Player now knows: Connect to            │
-   │ <HOME_IP>:7878 for world server     │
+   │ <HOME_IP>:7878 for world server         │
    └─────────────────────────────────────────┘
 
 6. World Server Connection (Double NAT)
    Player → ISP → CenturyLink → <HOME_IP>:7878
                  ▼
-   Greenwave Modem (192.168.0.1)
-   ├─ NAT: <HOME_IP>:7878 → 192.168.0.6:7878
+   Greenwave Modem (192.XXX.X.XX)
+   ├─ NAT: <HOME_IP>:7878 → 192.XXX.X.X:7878
    └─ Firewall: Allow established connections
                  ▼
-   Asus Router (192.168.50.1)
-   ├─ NAT: 192.168.0.6:7878 → 192.168.50.208:7878
+   Asus Router (192.XXX.XX.X)
+   ├─ NAT: 192.XXX.X.X:7878 → 192.XXX.XX.XXX:7878
    └─ Firewall: Port forward rule active
                  ▼
-   Mini PC Worldserver (192.168.50.208:7878)
+   Mini PC Worldserver (192.XXX.XX.XXX:7878)
    └─ TCP connection established
 
 7. Session Validation (Remote)
@@ -696,35 +696,35 @@ Network Topology with Security Zones:
     │ (Stateful Firewall)     │  │ 192.168.0.1                  │
     │                         │  │ ┌──────────────────────────┐ │
     │ Inbound Rules:          │  │ │ Firewall Rules:          │ │
-    │ :3724 ← 0.0.0.0/0 (WoW) │  │ │ :7878 → 192.168.0.6:7878 │ │
-    │ :3306 ← Home IP only    │  │ │ :3389 → 192.168.0.6:3389 │ │
+    │ :3724 ← 0.0.0.0/0 (WoW) │  │ │ :7878 → 192.XXX.X.X:7878 │ │
+    │ :3306 ← Home IP only    │  │ │ :3389 → 192.XXX.X.X:3389 │ │
     │ :22 ← Admin IP only     │  │ │ Default: DROP            │ │
     │ Default: DENY           │  │ └──────────────────────────┘ │
     └────────┬────────────────┘  └───────┬──────────────────────┘
-             │                           │ WAN: 192.168.0.6
+             │                           │ WAN: 192.XXX.X.X
     ┌────────┴────────────────┐  ┌───────┴──────────────────────┐
     │ EC2 Instance            │  │ Security Zone: Internal      │
-    │ VPC: 172.31.0.0/16      │  │ Trust Level: High            │
-    │ Subnet: 172.31.32.0/20  │  └──────────────────────────────┘
-    │ Private: 172.31.47.154  │          │
+    │ VPC: 172.XX.X.X/16      │  │ Trust Level: High            │
+    │ Subnet: 172.XX.XX.X/20  │  └──────────────────────────────┘
+    │ Private: 172.XX.XX.XXX  │          │
     │ Public: wow.vanillagorilla.cc    │  ┌───────┴──────────────────────┐
     │                         │  │ Asus Router                  │
-    │ ┌─────────────────────┐ │  │ 192.168.50.1                 │
+    │ ┌─────────────────────┐ │  │ 192.XXX.XX.X                 │
     │ │ ufw (Host Firewall) │ │  │ ┌──────────────────────────┐ │
     │ │ :3724 ALLOW         │ │  │ │ NAT + Firewall:          │ │
-    │ │ :3306 ALLOW (local) │ │  │ │ WAN: 192.168.0.6         │ │
-    │ │ :22 ALLOW           │ │  │ │ LAN: 192.168.50.0/24     │ │
+    │ │ :3306 ALLOW (local) │ │  │ │ WAN: 192.XXX.X.X         │ │
+    │ │ :22 ALLOW           │ │  │ │ LAN: 192.XXX.XX.X/24     │ │
     │ │ Default: DENY       │ │  │ │                          │ │
     │ └─────────────────────┘ │  │ │ Port Forwards:           │ │
-    │                         │  │ │ :7878 → 192.168.50.208   │ │
-    │ ┌─────────┐ ┌─────────┐│  │ │ :3389 → 192.168.50.208   │ │
+    │                         │  │ │ :7878 → 192.XXX.XX.XXX   │ │
+    │ ┌─────────┐ ┌─────────┐│  │ │ :3389 → 192.XXX.XX.XXX   │ │
     │ │Authsrvr │ │ MySQL   ││  │ │ Default: DROP            │ │
     │ │:3724    │ │:3306    ││  │ └──────────────────────────┘ │
     │ └─────────┘ └─────────┘│  └───────┬──────────────────────┘
     └─────────────────────────┘          │
                                   ┌──────┴────────────────────────┐
                                   │ Mini PC                       │
-                                  │ 192.168.50.208                │
+                                  │ 192.XXX.XX.XXX                │
                                   │ ┌───────────────────────────┐ │
                                   │ │ Windows Firewall:         │ │
                                   │ │ :7878 ALLOW (Public)      │ │
@@ -742,21 +742,21 @@ Network Topology with Security Zones:
 CIDR Blocks and Subnets:
 ════════════════════════
 
-AWS VPC: 172.31.0.0/16
-├─ Subnet: 172.31.32.0/20 (us-west-1a)
+AWS VPC: 172.XX.X.X/16
+├─ Subnet: 172.XX.XX.X/20 (us-west-1a)
 ├─ Available IPs: 4,096
 └─ EC2 Instance: 172.31.47.154/20
 
 Home Network (Double NAT):
-├─ Greenwave Modem: 192.168.0.0/24
-│  ├─ Gateway: 192.168.0.1
-│  ├─ DHCP Range: 192.168.0.100-200
-│  └─ Asus WAN: 192.168.0.6 (static assignment)
+├─ Greenwave Modem: 192.XXX.XX.X/24
+│  ├─ Gateway: 192.XXX.X.X
+│  ├─ DHCP Range: 192.XXX.X.XXX-XXX
+│  └─ Asus WAN: 192.XXX.XX.X (static assignment)
 │
-└─ Asus Router: 192.168.50.0/24
-   ├─ Gateway: 192.168.50.1
-   ├─ DHCP Range: 192.168.50.100-200
-   └─ Mini PC: 192.168.50.208 (DHCP reservation)
+└─ Asus Router: 192.XXX.XX.X/24
+   ├─ Gateway: 192.XXX.XX.X
+   ├─ DHCP Range: 192.XXX.XX.XXX-XXX
+   └─ Mini PC: 192.XXX.XX.XXX (DHCP reservation)
 
 Security Layers (Defense in Depth):
 ════════════════════════════════════
@@ -860,9 +860,6 @@ Rollback Process:
    ├─ Verify stability
    └─ Document issue for later fix
 
-Blue-Green Not Applicable:
-   └─ Single worldserver architecture doesn't support
-      parallel instances (shared database locks)
 
 Deployment Frequency:
    ├─ Core updates: Quarterly (AzerothCore upstream)
@@ -873,8 +870,6 @@ Deployment Frequency:
 ```
 
 ---
-
-*Due to length, this blueprint continues in the next response...*# Solution Blueprint: WoW 3.3.5a Hybrid Architecture (Part 2)
 
 ## 6. Requirements
 
@@ -1154,7 +1149,7 @@ CREATE TABLE `characters` (
 
 #### Compliance
 - **GDPR**: Not applicable (US-based hobby server, no EU players)
-- **Blizzard EULA**: Private server violates Blizzard EULA (accepted risk for non-commercial use)
+- **Blizzard EULA**: Private server violates Blizzard EULA (accepted risk for non-commercial case study use)
 - **Audit Logging**: 
   - MySQL general log disabled (performance)
   - Slow query log enabled (queries > 2 seconds)
@@ -1840,4 +1835,5 @@ The architecture demonstrates that hybrid cloud solutions, when properly designe
 ---
 
 *End of Solution Blueprint*
+
 
