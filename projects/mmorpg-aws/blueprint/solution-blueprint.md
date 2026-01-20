@@ -339,13 +339,13 @@ This solution demonstrates that hybrid architectures, when properly designed wit
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                    Home Network (<HOME_PUBLIC_IP>)                      │
 │  ┌───────────────────────────────────────────────────────────────────┐  │
-│  │ Greenwave Modem (192.168.0.1)          [NAT 1]                    │  │
-│  │ Port Forward: :7878 → 192.168.0.6:7878                            │  │
+│  │ Greenwave Modem (192.XXX.X.X)          [NAT 1]                    │  │
+│  │ Port Forward: :7878 → 192.1XX.XX.X:7878                            │  │
 │  └───────────────────────────────┬───────────────────────────────────┘  │
 │                                  │                                      │
 │  ┌───────────────────────────────┴───────────────────────────────────┐  │
 │  │ Asus Router (192.168.50.1)             [NAT 2]                    │  │
-│  │ Port Forward: :7878 → 192.168.50.208:7878                         │  │
+│  │ Port Forward: :7878 → 192.XXX.XX.XXX:7878                         │  │
 │  └───────────────────────────────┬───────────────────────────────────┘  │
 │                                  │                                      │
 │  ┌───────────────────────────────┴───────────────────────────────────┐  │
@@ -1840,3 +1840,4 @@ The architecture demonstrates that hybrid cloud solutions, when properly designe
 ---
 
 *End of Solution Blueprint*
+
