@@ -283,19 +283,19 @@ This solution demonstrates that hybrid architectures, when properly designed wit
 ┌────────────────────────────────────────────────────────────────────────┐
 │                         External Actors                                │
 │                                                                        │
-│    ┌──────────────┐         ┌──────────────┐        ┌──────────────┐  │
-│    │   Players    │         │    Admin     │        │  Monitoring  │  │
-│    │  (5-25)      │         │              │        │   Services   │  │
-│    │              │         │ - SSH to AWS │        │ - CloudWatch │  │
-│    │ - Connect    │         │ - RDP to PC  │        │ - Logs       │  │
-│    │ - Authenticate│        │ - Manage DBs │        │              │  │
-│    │ - Play game  │         │              │        │              │  │
-│    └──────┬───────┘         └──────┬───────┘        └──────┬───────┘  │
-└───────────┼────────────────────────┼───────────────────────┼──────────┘
-            │                        │                       │
-            │ Step 1: DNS Query      │ SSH :22              │ Metrics
-            │ wow.vanillagorilla.cc  │ RDP :3389            │
-            ▼                        ▼                       ▼
+│    ┌───────────────┐         ┌──────────────┐        ┌──────────────┐  │
+│    │   Players     │         │    Admin     │        │  Monitoring  │  │
+│    │  (5-25)       │         │              │        │   Services   │  │
+│    │               │         │ - SSH to AWS │        │ - CloudWatch │  │
+│    │ - Connect     │         │ - RDP to PC  │        │ - Logs       │  │
+│    │ - Authenticate│         │ - Manage DBs │        │              │  │
+│    │ - Play game   │         │              │        │              │  │
+│    └──────┬────────┘         └──────┬───────┘        └──────┬───────┘  │
+└───────────┼─────────────────────────┼───────────────────────┼──────────┘
+            │                         │                       │
+            │ Step 1: DNS Query       │ SSH :22               │ Metrics
+            │ wow.vanillagorilla.cc   │ RDP :3389             │
+            ▼                         ▼                       ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                     Cloudflare DNS Layer (Free Tier)                    │
 │  ┌───────────────────────────────────────────────────────────────────┐  │
@@ -313,18 +313,18 @@ This solution demonstrates that hybrid architectures, when properly designed wit
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                          AWS Cloud (us-west-1)                          │
 │  ┌───────────────────────────────────────────────────────────────────┐  │
-│  │ EC2 t3.small (wow.vanillagorilla.cc)       [Security Group]      │  │
-│  │ ┌──────────────┐  ┌──────────────────────┐                       │  │
-│  │ │  Authserver  │  │   MySQL 8.0          │                       │  │
-│  │ │  :3724       │──│   acore_auth DB      │                       │  │
-│  │ │              │  │   - Accounts         │     Allows:           │  │
-│  │ │ - Auth login │  │   - Sessions         │     :3724 (World)     │  │
-│  │ │ - Realm list │  │   - Realmlist        │     :3306 (Home WS)   │  │
-│  │ │   Returns:   │  │                      │     :22 (Admin)       │  │
-│  │ │   <HOME_     │  │   Localhost only     │                       │  │
-│  │ │   PUBLIC_IP> │  │   (not exposed)      │                       │  │
-│  │ │   :7878      │  │                      │                       │  │
-│  │ └──────────────┘  └──────────────────────┘                       │  │
+│  │ EC2 t3.small (wow.vanillagorilla.cc)       [Security Group]       │  │
+│  │ ┌──────────────┐  ┌──────────────────────┐                        │  │
+│  │ │  Authserver  │  │   MySQL 8.0          │                        │  │
+│  │ │  :3724       │──│   acore_auth DB      │                        │  │
+│  │ │              │  │   - Accounts         │     Allows:            │  │
+│  │ │ - Auth login │  │   - Sessions         │     :3724 (World)      │  │
+│  │ │ - Realm list │  │   - Realmlist        │     :3306 (Home WS)    │  │
+│  │ │   Returns:   │  │                      │     :22 (Admin)        │  │
+│  │ │   <HOME_     │  │   Localhost only     │                        │  │
+│  │ │   PUBLIC_IP> │  │   (not exposed)      │                        │  │
+│  │ │   :7878      │  │                      │                        │  │
+│  │ └──────────────┘  └──────────────────────┘                        │  │
 │  └───────────────────────────────────────────────────────────────────┘  │
 └────────────────────────┬────────────────────────────────────────────────┘
                          │ :3306 outbound
@@ -340,7 +340,7 @@ This solution demonstrates that hybrid architectures, when properly designed wit
 │                    Home Network (<HOME_PUBLIC_IP>)                      │
 │  ┌───────────────────────────────────────────────────────────────────┐  │
 │  │ Greenwave Modem (192.XXX.X.X)          [NAT 1]                    │  │
-│  │ Port Forward: :7878 → 192.1XX.XX.X:7878                            │  │
+│  │ Port Forward: :7878 → 192.1XX.XX.X:7878                           │  │
 │  └───────────────────────────────┬───────────────────────────────────┘  │
 │                                  │                                      │
 │  ┌───────────────────────────────┴───────────────────────────────────┐  │
@@ -354,7 +354,7 @@ This solution demonstrates that hybrid architectures, when properly designed wit
 │  │ │  Worldserver       │  │   MySQL 8.0                           │ │  │
 │  │ │  :7878             │──│   - acore_characters                  │ │  │
 │  │ │                    │  │   - acore_world                       │ │  │
-│  │ │ - 25 players       │  │   - acore_playerbots                 │ │  │
+│  │ │ - 25 players       │  │   - acore_playerbots                  │ │  │
 │  │ │ - 2000 AI bots     │  │                                       │ │  │
 │  │ │ - World simulation │  │   Query latency: <1ms                 │ │  │
 │  │ │                    │  │   Load: ~350 qps                      │ │  │
@@ -384,101 +384,101 @@ Connection Flow:
 │  │   Player Client      │           │   Admin Tools        │            │
 │  │   (WoW 3.3.5a)       │           │   - SSH Client       │            │
 │  └──────┬───────────────┘           │   - MySQL Workbench  │            │
-│         │                            │   - RDP Client       │            │
-│         │ :3724 auth                 └──────┬───────────────┘            │
-│         │ :7878 world                       │ :22, :3306, :3389          │
-│         ▼                                   ▼                            │
+│         │                           │   - RDP Client       │            │
+│         │ :3724 auth                └──────┬───────────────┘            │
+│         │ :7878 world                       │ :22, :3306, :3389         │
+│         ▼                                   ▼                           │
 │  ═══════════════════════════════════════════════════════════════════    │
-│                          AWS EC2 Instance                                │
+│                          AWS EC2 Instance                               │
 │  ═══════════════════════════════════════════════════════════════════    │
-│         ┌────────────────────────────────────────────┐                   │
-│         │        Authserver Process                  │                   │
-│         │  ┌──────────────────────────────────────┐  │                   │
-│         │  │  Network Listener :3724              │  │                   │
-│         │  └────┬─────────────────────────────────┘  │                   │
-│         │       │                                     │                   │
-│         │       ▼                                     │                   │
-│         │  ┌──────────────────────────────────────┐  │                   │
-│         │  │  Authentication Handler               │  │                   │
-│         │  │  - SRP6 protocol                      │  │                   │
-│         │  │  - Session key generation             │  │                   │
-│         │  └────┬─────────────────────────────────┘  │                   │
-│         │       │ SQL queries                         │                   │
-│         │       ▼                                     │                   │
-│         │  ┌──────────────────────────────────────┐  │                   │
-│         │  │  Database Connection Pool (2 conn)   │  │                   │
-│         │  └────┬─────────────────────────────────┘  │                   │
-│         └───────┼─────────────────────────────────────┘                   │
-│                 │ localhost:3306                                          │
-│                 ▼                                                         │
-│         ┌────────────────────────────────────────────┐                   │
-│         │        MySQL 8.0 Process                   │                   │
-│         │  ┌──────────────────────────────────────┐  │                   │
-│         │  │  acore_auth Database                 │  │                   │
-│         │  │  ┌────────────────────────────────┐  │  │                   │
-│         │  │  │ Tables (23):                   │  │  │                   │
-│         │  │  │ - account (credentials)        │  │  │                   │
-│         │  │  │ - realmlist (server info)      │  │  │                   │
-│         │  │  │ - account_access (permissions) │  │  │                   │
-│         │  │  │ - account_banned (bans)        │  │  │                   │
-│         │  │  └────────────────────────────────┘  │  │                   │
-│         │  │  Size: ~500 MB, Load: 1-2 qps       │  │                   │
-│         │  └──────────────────────────────────────┘  │                   │
-│         └────────────────────────────────────────────┘                   │
-│                          │                                                │
-│                          │ :3306 incoming (from Home WS)                 │
-│  ════════════════════════╪═══════════════════════════════════════════    │
-│                          │                                                │
-│                          │ Internet                                       │
-│                          │                                                │
-│  ════════════════════════╪═══════════════════════════════════════════    │
-│                 Home Network                                              │
-│  ════════════════════════╪═══════════════════════════════════════════    │
-│                          ▼                                                │
-│         ┌────────────────────────────────────────────┐                   │
+│         ┌────────────────────────────────────────────┐                  │
+│         │        Authserver Process                  │                  │
+│         │  ┌──────────────────────────────────────┐  │                  │
+│         │  │  Network Listener :3724              │  │                  │
+│         │  └────┬─────────────────────────────────┘  │                  │
+│         │       │                                    │                  │
+│         │       ▼                                    │                  │
+│         │  ┌───────────────────────────────────────┐ │                  │
+│         │  │  Authentication Handler               │ │                  │
+│         │  │  - SRP6 protocol                      │ │                  │
+│         │  │  - Session key generation             │ │                  │
+│         │  └────┬──────────────────────────────────┘ │                  │
+│         │       │ SQL queries                        │                  │
+│         │       ▼                                    │                  │
+│         │  ┌──────────────────────────────────────┐  │                  │
+│         │  │  Database Connection Pool (2 conn)   │  │                  │
+│         │  └────┬─────────────────────────────────┘  │                  │
+│         └───────┼────────────────────────────────────┘                  │
+│                 │ localhost:3306                                        │
+│                 ▼                                                       │
+│         ┌────────────────────────────────────────────┐                  │
+│         │        MySQL 8.0 Process                   │                  │
+│         │  ┌──────────────────────────────────────┐  │                  │
+│         │  │  acore_auth Database                 │  │                  │
+│         │  │  ┌────────────────────────────────┐  │  │                  │
+│         │  │  │ Tables (23):                   │  │  │                  │
+│         │  │  │ - account (credentials)        │  │  │                  │
+│         │  │  │ - realmlist (server info)      │  │  │                  │
+│         │  │  │ - account_access (permissions) │  │  │                  │
+│         │  │  │ - account_banned (bans)        │  │  │                  │
+│         │  │  └────────────────────────────────┘  │  │                  │
+│         │  │  Size: ~500 MB, Load: 1-2 qps        │  │                  │
+│         │  └──────────────────────────────────────┘  │                  │
+│         └────────────────────────────────────────────┘                  │
+│                          │                                              │
+│                          │ :3306 incoming (from Home WS)                │
+│  ════════════════════════╪═══════════════════════════════════════════   │
+│                          │                                              │
+│                          │ Internet                                     │
+│                          │                                              │
+│  ════════════════════════╪═══════════════════════════════════════════   │
+│                 Home Network                                            │
+│  ════════════════════════╪═══════════════════════════════════════════   │
+│                          ▼                                              │
+│         ┌────────────────────────────────────────────┐                  │
 │         │      Worldserver Process                   │                   │
 │         │  ┌──────────────────────────────────────┐  │                   │
 │         │  │  Network Listener :7878              │  │                   │
 │         │  │  - Accepts player connections        │  │                   │
 │         │  └────┬─────────────────────────────────┘  │                   │
-│         │       │                                     │                   │
-│         │       ▼                                     │                   │
+│         │       │                                    │                   │
+│         │       ▼                                    │                   │
 │         │  ┌──────────────────────────────────────┐  │                   │
-│         │  │  Session Manager                      │  │                   │
-│         │  │  - Validates with AWS auth DB         │  │                   │
+│         │  │  Session Manager                     │  │                   │
+│         │  │  - Validates with AWS auth DB        │  │                   │
 │         │  │  - Frequency: 1x per login           │  │                   │
 │         │  └────┬─────────────────────────────────┘  │                   │
-│         │       │                                     │                   │
-│         │       ▼                                     │                   │
+│         │       │                                    │                   │
+│         │       ▼                                    │                   │
 │         │  ┌──────────────────────────────────────┐  │                   │
-│         │  │  Game Loop (50ms ticks)               │  │                   │
-│         │  │  ┌────────────────────────────────┐   │  │                   │
-│         │  │  │ Player Updates (25 players)    │   │  │                   │
-│         │  │  │ - Movement, combat, inventory  │   │  │                   │
-│         │  │  └────────────────────────────────┘   │  │                   │
-│         │  │  ┌────────────────────────────────┐   │  │                   │
-│         │  │  │ Bot AI Updates (2000 bots)     │   │  │                   │
-│         │  │  │ - Playerbots module            │   │  │                   │
-│         │  │  │ - Combat, questing, social     │   │  │                   │
-│         │  │  └────────────────────────────────┘   │  │                   │
-│         │  │  ┌────────────────────────────────┐   │  │                   │
-│         │  │  │ World Simulation               │   │  │                   │
-│         │  │  │ - NPCs, spawns, weather        │   │  │                   │
-│         │  │  └────────────────────────────────┘   │  │                   │
+│         │  │  Game Loop (50ms ticks)              │  │                   │
+│         │  │  ┌────────────────────────────────┐  │  │                   │
+│         │  │  │ Player Updates (25 players)    │  │  │                   │
+│         │  │  │ - Movement, combat, inventory  │  │  │                   │
+│         │  │  └────────────────────────────────┘  │  │                   │
+│         │  │  ┌────────────────────────────────┐  │  │                   │
+│         │  │  │ Bot AI Updates (2000 bots)     │  │  │                   │
+│         │  │  │ - Playerbots module            │  │  │                   │
+│         │  │  │ - Combat, questing, social     │  │  │                   │
+│         │  │  └────────────────────────────────┘  │  │                   │
+│         │  │  ┌────────────────────────────────┐  │  │                   │
+│         │  │  │ World Simulation               │  │  │                   │
+│         │  │  │ - NPCs, spawns, weather        │  │  │                   │
+│         │  │  └────────────────────────────────┘  │  │                   │
 │         │  └────┬─────────────────────────────────┘  │                   │
 │         │       │ SQL queries (~350 qps)             │                   │
-│         │       ▼                                     │                   │
+│         │       ▼                                    │                   │
 │         │  ┌──────────────────────────────────────┐  │                   │
-│         │  │  Database Connection Pools            │  │                   │
+│         │  │  Database Connection Pools           │  │                   │
 │         │  │  - Auth DB: 2 connections (remote)   │  │                   │
 │         │  │  - Char/World: 10 connections (local)│  │                   │
 │         │  └────┬────────┬────────────────────────┘  │                   │
-│         └───────┼────────┼──────────────────────────┘                   │
-│                 │        │                                                │
+│         └───────┼────────┼───────────────────────────┘                   │
+│                 │        │                                               │
 │    AWS :3306 ◄──┘        └──► localhost:3306                             │
 │    (session valid)            (char/world queries)                       │
-│                               │                                           │
-│                               ▼                                           │
+│                               │                                          │
+│                               ▼                                          │
 │         ┌────────────────────────────────────────────┐                   │
 │         │        MySQL 8.0 Process                   │                   │
 │         │  ┌──────────────────────────────────────┐  │                   │
@@ -501,7 +501,7 @@ Connection Flow:
 │         │  Query Latency: <1ms (local SSD)           │                   │
 │         └────────────────────────────────────────────┘                   │
 │                                                                          │
-└─────────────────────────────────────────────────────────────────────────┘
+└──────────────────────────────────────────────────────────────────────────┘
 
 Component groupings/boundaries:
 - AWS boundary shows authserver + auth database isolation
@@ -521,10 +521,10 @@ Player Login and Session Establishment Flow:
    └─ Target: Cloudflare DNS resolution required
 
 2. DNS Resolution (Cloudflare)
-   ┌─────────────────────────────────────────┐
-   │ Player → Cloudflare DNS                 │
+   ┌──────────────────────────────────────────┐
+   │ Player → Cloudflare DNS                  │
    │ Query: A record for wow.vanillagorilla.cc│
-   └─────────────────────────────────────────┘
+   └──────────────────────────────────────────┘
                  ▼
    ┌─────────────────────────────────────────┐
    │ Cloudflare DNS → Player                 │
@@ -680,11 +680,11 @@ Network Topology with Security Zones:
           ┌───────────────┴───────────────┐
           │                               │
           ▼                               ▼
-    ┌─────────────────┐         ┌──────────────────┐
-    │ AWS us-west-1   │         │ Home Public IP   │
-    │ wow.vanillagorilla.cc    │         │ <HOME_IP>    │
-    │ (Static EIP)    │         │ (Dynamic DHCP)   │
-    └────────┬────────┘         └────────┬─────────┘
+    ┌──────────────────────┐    ┌────────────────────┐
+    │ AWS us-west-1        │    │ Home Public IP     │
+    │ wow.vanillagorilla.cc|    │         │ <HOME_IP>│
+    │ (Static EIP)         │    │ (Dynamic DHCP)     │
+    └────────┬─────────────┘    └────────┬───────────┘
              │                           │
     ┌────────┴────────────────┐  ┌───────┴──────────────────────┐
     │ Security Zone: Cloud    │  │ Security Zone: DMZ           │
@@ -707,7 +707,8 @@ Network Topology with Security Zones:
     │ VPC: 172.XX.X.X/16      │  │ Trust Level: High            │
     │ Subnet: 172.XX.XX.X/20  │  └──────────────────────────────┘
     │ Private: 172.XX.XX.XXX  │          │
-    │ Public: wow.vanillagorilla.cc    │  ┌───────┴──────────────────────┐
+    │ Public:                 |          |
+    |   wow.vanillagorilla.cc |  ┌───────┴──────────────────────┐
     │                         │  │ Asus Router                  │
     │ ┌─────────────────────┐ │  │ 192.XXX.XX.X                 │
     │ │ ufw (Host Firewall) │ │  │ ┌──────────────────────────┐ │
@@ -717,10 +718,10 @@ Network Topology with Security Zones:
     │ │ Default: DENY       │ │  │ │                          │ │
     │ └─────────────────────┘ │  │ │ Port Forwards:           │ │
     │                         │  │ │ :7878 → 192.XXX.XX.XXX   │ │
-    │ ┌─────────┐ ┌─────────┐│  │ │ :3389 → 192.XXX.XX.XXX   │ │
-    │ │Authsrvr │ │ MySQL   ││  │ │ Default: DROP            │ │
-    │ │:3724    │ │:3306    ││  │ └──────────────────────────┘ │
-    │ └─────────┘ └─────────┘│  └───────┬──────────────────────┘
+    │ ┌─────────┐ ┌─────────┐ │  │ │ :3389 → 192.XXX.XX.XXX   │ │
+    │ │Authsrvr │ │ MySQL   │ │  │ │ Default: DROP            │ │
+    │ │:3724    │ │:3306    │ │  │ └──────────────────────────┘ │
+    │ └─────────┘ └─────────┘ │  └───────┬──────────────────────┘
     └─────────────────────────┘          │
                                   ┌──────┴────────────────────────┐
                                   │ Mini PC                       │
@@ -733,10 +734,10 @@ Network Topology with Security Zones:
                                   │ │ Default: DENY             │ │
                                   │ └───────────────────────────┘ │
                                   │                               │
-                                  │ ┌──────────┐ ┌──────────────┐│
-                                  │ │Worldsrvr │ │ MySQL        ││
-                                  │ │:7878     │ │:3306 (local) ││
-                                  │ └──────────┘ └──────────────┘│
+                                  │ ┌──────────┐ ┌──────────────┐ │
+                                  │ │Worldsrvr │ │ MySQL        │ │
+                                  │ │:7878     │ │:3306 (local) │ │
+                                  │ └──────────┘ └──────────────┘ │
                                   └───────────────────────────────┘
 
 CIDR Blocks and Subnets:
@@ -803,11 +804,11 @@ Home Production:
 │ │ ├─ Process: worldserver.exe                                 │ │
 │ │ ├─ Config: worldserver.conf (production settings)           │ │
 │ │ ├─ Uptime: Manual start (survives restarts via startup)     │ │
-│ │ └─ Logs: C:\Build\bin\RelWithDebInfo\logs\                 │ │
+│ │ └─ Logs: C:\Build\bin\RelWithDebInfo\logs\                  │ │
 │ └─────────────────────────────────────────────────────────────┘ │
 │ ┌─────────────────────────────────────────────────────────────┐ │
 │ │ MySQL: PRODUCTION                                           │ │
-│ │ ├─ Databases: acore_characters, acore_world, playerbots    │ │
+│ │ ├─ Databases: acore_characters, acore_world, playerbots     │ │
 │ │ ├─ Service: MySQL84 (Windows Service)                       │ │
 │ │ ├─ Backups: Manual + automated to AWS S3 (planned)          │ │
 │ │ └─ Monitoring: Windows Performance Monitor                  │ │
@@ -818,11 +819,11 @@ Development Environment (LOCAL):
 ┌─────────────────────────────────────────────────────────────────┐
 │ Same Mini PC - Separate Build                                   │
 │ ┌─────────────────────────────────────────────────────────────┐ │
-│ │ Development Build                                            │ │
+│ │ Development Build                                           │ │
 │ │ ├─ Path: C:\azerothcore-dev\                                │ │
-│ │ ├─ Worldserver: TEST instance on :8888                       │ │
+│ │ ├─ Worldserver: TEST instance on :8888                      │ │
 │ │ ├─ MySQL: Separate test databases (acore_*_test)            │ │
-│ │ ├─ Purpose: Code changes, module testing                     │ │
+│ │ ├─ Purpose: Code changes, module testing                    │ │
 │ │ └─ State: Stopped unless actively developing                │ │
 │ └─────────────────────────────────────────────────────────────┘ │
 └─────────────────────────────────────────────────────────────────┘
@@ -1835,5 +1836,6 @@ The architecture demonstrates that hybrid cloud solutions, when properly designe
 ---
 
 *End of Solution Blueprint*
+
 
 
