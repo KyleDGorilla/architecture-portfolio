@@ -246,7 +246,7 @@ This solution demonstrates that hybrid architectures, when properly designed wit
 
 ### ADR-005: Double NAT Acceptance
 - **Status**: Accepted
-- **Context**: Home network uses Greenwave fiber modem (192.168.0.x) with Asus router behind it (192.168.50.x), creating double NAT. Could bridge modem or use DMZ, but introduces security concerns.
+- **Context**: Home network uses Greenwave fiber modem (192.xxx.x.x) with Asus router behind it (192.xxx.xx.x), creating double NAT. Could bridge modem or use DMZ, but introduces security concerns.
 - **Decision**: Accept double NAT configuration with port forwarding through both layers (Greenwave 7878 → Asus WAN, Asus 7878 → Mini PC).
 - **Alternatives Considered**:
   - **Bridge Mode Modem** - Rejected: Loses Greenwave firewall protection, more complex troubleshooting
@@ -1836,6 +1836,7 @@ The architecture demonstrates that hybrid cloud solutions, when properly designe
 ---
 
 *End of Solution Blueprint*
+
 
 
 
