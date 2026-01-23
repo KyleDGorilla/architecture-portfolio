@@ -610,7 +610,7 @@ Player Login and Session Establishment Flow:
    └─────────────────────────────────────────┘
                  ▼
    ┌─────────────────────────────────────────┐
-   │ Session validated ✓                     │
+   │ Session validated                       │
    │ Player account ID retrieved             │
    └─────────────────────────────────────────┘
 
@@ -619,14 +619,14 @@ Player Login and Session Establishment Flow:
    │ Home WS → Local MySQL :3306             │
    │ Database: acore_characters              │
    │ Query: SELECT * FROM characters         │
-   │ WHERE account = ?                       │
-   │ Latency: <1ms (localhost loopback)      │
+   │ WHERE account = (player account)        │
+   │ Latency: <1ms (localhost)               │
    └─────────────────────────────────────────┘
                  ▼
    ┌─────────────────────────────────────────┐
    │ Load character data (20 queries):       │
    │ - Character stats                       │
-   │ - Inventory (100+ items)                │
+   │ - Inventory (Player items)              │
    │ - Spells and talents                    │
    │ - Quest status                          │
    │ - Reputation                            │
@@ -651,7 +651,7 @@ Player Action → Worldserver Processing
    ├─ Quest: Check objectives → Update quest log → DB
    └─ Social: Chat → Broadcast to nearby players → No DB
 
-Worldserver Game Loop (50ms ticks):
+Worldserver Game Loop (50ms):
    ├─ Process 25 player updates
    ├─ Process 400 bot AI updates (staggered)
    ├─ Process NPC AI and spawns
@@ -683,7 +683,7 @@ Network Topology with Security Zones:
     ┌──────────────────────┐    ┌────────────────────┐
     │ AWS us-west-1        │    │ Home Public IP     │
     │ wow.vanillagorilla.cc|    │         │ <HOME_IP>│
-    │ (Static EIP)         │    │ (Dynamic DHCP)     │
+    │ (AWS EIP)            │    │ (Dynamic DHCP)     │
     └────────┬─────────────┘    └────────┬───────────┘
              │                           │
     ┌────────┴────────────────┐  ┌───────┴──────────────────────┐
@@ -833,7 +833,7 @@ Deployment Pipeline:
 
 Code Changes:
    ├─ Modify C++ source in modules
-   ├─ Commit to GitHub (optional: fork repo)
+   ├─ Commit to GitHub
    └─ Trigger: Manual rebuild decision
 
 Build Process (Visual Studio):
@@ -1836,6 +1836,7 @@ The architecture demonstrates that hybrid cloud solutions, when properly designe
 ---
 
 *End of Solution Blueprint*
+
 
 
 
