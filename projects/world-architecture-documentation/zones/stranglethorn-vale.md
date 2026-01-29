@@ -56,7 +56,7 @@ Successfully identified true StrangleThorn Vale boundaries through landmark-base
 **Lesson Learned**: Ground truth via landmarks > coordinate assumptions. When initial data doesn't match expectations, validate with known entities before proceeding.
 
 **Technical Artifacts**:
-- [Zone Identification Queries](https://github.com/KyleDGorilla/vanilla-gorilla/blob/main/docs/architecture/zones/stranglethorn-vale/queries/01-zone-identification.sql)
+- [Zone Identification Queries](https://github.com/KyleDGorilla/vanilla-gorilla/blob/main/docs/architecture/zones/stranglethorn-vale/queries/01-zone-idenfication.sql)
 - [Boundary Refinement Process](https://github.com/KyleDGorilla/vanilla-gorilla/blob/main/docs/architecture/zones/stranglethorn-vale/queries/03-boundary-refinement.sql)
 
 ---
@@ -336,3 +336,4 @@ This zone was selected as the first documentation target because:
 
 *Created: January 26, 2026*  
 *Last Updated: January 27, 2026*
+
